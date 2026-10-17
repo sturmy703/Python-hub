@@ -224,12 +224,17 @@ document.getElementById("quoteForm").addEventListener(
 
     alert(
       
-"Your quote request form is ready. Please submit your details to request a quote.\n\n" +
+statusBox.textContent = "Your request has been submitted successfully! Redirecting to WhatsApp...";
 
-      "Name: " + name +
-      "\nEmail: " + email +
-      "\nService: " + service +
-      "\n\nTo activate real enquiries, connect a verified company email or form service."
+setTimeout(() => {
+  const phoneNumber = "2547XXXXXXXX"; // Replace with your WhatsApp number
+  const message = encodeURIComponent(
+    `Hello Ramaza Inv.! I have submitted a quote request for ${payload.service}. My name is ${payload.name}.`
+  );
+
+  window.location.href =
+    `https://wa.me/${phoneNumber}?text=${message}`;
+}, 2000);
     );
   }
 );
