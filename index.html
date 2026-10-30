@@ -1,0 +1,429 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101827">
+<title>Secure OTP Verification</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  color: white;
+  background:
+    radial-gradient(circle at top, #263c5a, transparent 55%),
+    #101827;
+}
+
+.container {
+  width: 100%;
+  max-width: 410px;
+  padding: 30px 24px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 22px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  text-align: center;
+}
+
+.logo {
+  width: 65px;
+  height: 65px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 18px;
+  border-radius: 20px;
+  background: #16a34a;
+  font-size: 30px;
+}
+
+h1 {
+  font-size: 25px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #aebbd0;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 25px;
+}
+
+label {
+  display: block;
+  text-align: left;
+  font-size: 13px;
+  margin-bottom: 9px;
+  color: #d5dfef;
+}
+
+input {
+  width: 100%;
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid #43536b;
+  outline: none;
+  background: #172337;
+  color: white;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+input:focus {
+  border-color: #22c55e;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.primary {
+  background: #22c55e;
+  color: #07150c;
+}
+
+.whatsapp {
+  background: #128c50;
+  color: white;
+  display: none;
+}
+
+.verify {
+  background: #3b82f6;
+  color: white;
+  display: none;
+}
+
+button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+#otpSection {
+  display: none;
+  margin-top: 25px;
+}
+
+#otpInput {
+  text-align: center;
+  letter-spacing: 12px;
+  font-size: 25px;
+  font-weight: bold;
+}
+
+#timer {
+  margin: 14px 0;
+  color: #facc15;
+  font-size: 13px;
+}
+
+#status {
+  display: none;
+  margin-top: 17px;
+  padding: 13px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.success {
+  display: block !important;
+  background: rgba(34,197,94,.15);
+  color: #4ade80;
+}
+
+.error {
+  display: block !important;
+  background: rgba(239,68,68,.15);
+  color: #f87171;
+}
+
+.note {
+  margin-top: 25px;
+  font-size: 11px;
+  color: #8493a9;
+  line-height: 1.6;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="logo">🔐</div>
+
+  <h1>Verify Your Number</h1>
+
+  <p class="subtitle">
+    Enter your WhatsApp number to receive a
+    verification code.
+  </p>
+
+  <div id="phoneSection">
+
+    <label for="phone">WhatsApp phone number</label>
+
+    <input
+      id="phone"
+      type="tel"
+      placeholder="254712345678"
+      autocomplete="tel"
+    >
+
+    <button class="primary" onclick="generateOTP()">
+      Generate OTP
+    </button>
+
+  </div>
+
+  <button id="sendButton"
+          class="whatsapp"
+          onclick="openWhatsApp()">
+    💬 Send OTP on WhatsApp
+  </button>
+
+  <div id="otpSection">
+
+    <label for="otpInput">Enter your 6-digit OTP</label>
+
+    <input
+      id="otpInput"
+      type="text"
+      inputmode="numeric"
+      maxlength="6"
+      placeholder="000000"
+      autocomplete="one-time-code"
+    >
+
+    <div id="timer">Code expires in 05:00</div>
+
+    <button class="verify" id="verifyButton"
+            onclick="verifyOTP()">
+      Verify Code
+    </button>
+
+    <button class="primary" id="resendButton"
+            onclick="generateOTP()" disabled>
+      Generate another code
+    </button>
+
+  </div>
+
+  <div id="status"></div>
+
+  <p class="note">
+    DEMO VERSION · Manual WhatsApp delivery.
+    Never use this frontend-only demo to protect
+    real accounts or sensitive information.
+  </p>
+
+</div>
+
+<script>
+let generatedOTP = "";
+let expiryTime = 0;
+let attempts = 0;
+let verified = false;
+let phoneNumber = "";
+let timerInterval = null;
+let resendTimeout = null;
+
+const phone = document.getElementById("phone");
+const otpInput = document.getElementById("otpInput");
+const statusBox = document.getElementById("status");
+const otpSection = document.getElementById("otpSection");
+const sendButton = document.getElementById("sendButton");
+const verifyButton = document.getElementById("verifyButton");
+const resendButton = document.getElementById("resendButton");
+
+function showStatus(message, type) {
+  statusBox.textContent = message;
+  statusBox.className = type;
+}
+
+function generateOTP() {
+
+  if (verified) return;
+
+  let number = phone.value.trim().replace(/[\s+()-]/g, "");
+
+  // Accept Kenyan local numbers or international format.
+  if (/^0[17]\d{8}$/.test(number)) {
+    number = "254" + number.substring(1);
+  }
+
+  if (!/^254[17]\d{8}$/.test(number)) {
+    showStatus(
+      "Enter a valid Kenyan number, e.g. 0712345678 or 254712345678.",
+      "error"
+    );
+    return;
+  }
+
+  phoneNumber = number;
+
+  clearInterval(timerInterval);
+  clearTimeout(resendTimeout);
+
+  generatedOTP = String(
+    Math.floor(100000 + Math.random() * 900000)
+  );
+
+  expiryTime = Date.now() + 5 * 60 * 1000;
+  attempts = 0;
+
+  otpInput.value = "";
+  otpInput.disabled = false;
+  verified = false;
+
+  otpSection.style.display = "block";
+  sendButton.style.display = "block";
+  verifyButton.style.display = "block";
+
+  resendButton.disabled = true;
+  resendButton.textContent = "Generate another code";
+
+  showStatus(
+    "Your code is ready. Open WhatsApp and send the prepared message.",
+    "success"
+  );
+
+  updateTimer();
+
+  timerInterval = setInterval(updateTimer, 1000);
+
+  // Resend cooldown: 30 seconds.
+  resendTimeout = setTimeout(() => {
+    if (!verified) {
+      resendButton.disabled = false;
+    }
+  }, 30000);
+
+}
+
+function openWhatsApp() {
+
+  if (!generatedOTP || Date.now() > expiryTime) {
+    showStatus("Your code has expired. Generate a new one.", "error");
+    return;
+  }
+
+  const message =
+    "Your verification code is: " + generatedOTP +
+    ". It expires in 5 minutes. Demo OTP only.";
+
+  const url =
+    "https://wa.me/" + phoneNumber +
+    "?text=" + encodeURIComponent(message);
+
+  window.open(url, "_blank");
+}
+
+function verifyOTP() {
+
+  if (verified) return;
+
+  if (Date.now() > expiryTime) {
+    showStatus("OTP expired. Generate a new code.", "error");
+    return;
+  }
+
+  if (attempts >= 5) {
+    showStatus("Too many attempts. Generate a new code.", "error");
+    return;
+  }
+
+  const entered = otpInput.value.trim();
+
+  if (!/^\d{6}$/.test(entered)) {
+    showStatus("Enter all 6 digits.", "error");
+    return;
+  }
+
+  attempts++;
+
+  if (entered === generatedOTP) {
+
+    verified = true;
+
+    clearInterval(timerInterval);
+    clearTimeout(resendTimeout);
+
+    otpInput.disabled = true;
+    verifyButton.disabled = true;
+    resendButton.disabled = true;
+    sendButton.style.display = "none";
+
+    showStatus(
+      "✓ SUCCESS! Your phone number has been verified.",
+      "success"
+    );
+
+  } else {
+
+    showStatus(
+      "Incorrect code. Attempts remaining: " +
+      (5 - attempts),
+      "error"
+    );
+
+    if (attempts >= 5) {
+      verifyButton.disabled = true;
+      showStatus(
+        "Too many attempts. Generate a new code.",
+        "error"
+      );
+    }
+  }
+}
+
+function updateTimer() {
+
+  const remaining = Math.max(
+    0,
+    Math.ceil((expiryTime - Date.now()) / 1000)
+  );
+
+  const minutes = String(Math.floor(remaining / 60))
+    .padStart(2, "0");
+
+  const seconds = String(remaining % 60)
+    .padStart(2, "0");
+
+  document.getElementById("timer").textContent =
+    "Code expires in " + minutes + ":" + seconds;
+
+  if (remaining <= 0) {
+    clearInterval(timerInterval);
+    verifyButton.disabled = true;
+    sendButton.style.display = "none";
+    showStatus(
+      "OTP expired. Generate a new code.",
+      "error"
+    );
+  }
+}
+</script>
+
+</body>
+</html>
