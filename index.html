@@ -4,426 +4,412 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#101827">
-<title>Secure OTP Verification</title>
+<meta name="theme-color" content="#ff75a9">
+<title>For Gloria ❤️</title>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;500;600;700&display=swap');
+
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 body {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  font-family: Arial, sans-serif;
-  color: white;
+  font-family: 'Poppins', sans-serif;
+  color: #71334f;
   background:
-    radial-gradient(circle at top, #263c5a, transparent 55%),
-    #101827;
+    radial-gradient(circle at 20% 20%, #fff1f7, transparent 35%),
+    radial-gradient(circle at 80% 80%, #ffc1dc, transparent 40%),
+    linear-gradient(135deg, #ffe5f0, #ffb6d2, #ffdce9);
+  overflow-x: hidden;
+}
+
+.hearts {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.heart {
+  position: absolute;
+  bottom: -40px;
+  animation: floatUp linear infinite;
+  opacity: .7;
+}
+
+@keyframes floatUp {
+  to {
+    transform: translateY(-115vh) rotate(360deg);
+    opacity: 0;
+  }
 }
 
 .container {
-  width: 100%;
-  max-width: 410px;
-  padding: 30px 24px;
-  background: rgba(255,255,255,.07);
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: 22px;
-  box-shadow: 0 20px 60px rgba(0,0,0,.3);
-  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 25px 16px;
+  position: relative;
+  z-index: 1;
 }
 
-.logo {
-  width: 65px;
-  height: 65px;
-  display: grid;
-  place-items: center;
-  margin: 0 auto 18px;
-  border-radius: 20px;
-  background: #16a34a;
-  font-size: 30px;
+.card {
+  width: 100%;
+  max-width: 440px;
+  text-align: center;
+  padding: 35px 24px;
+  border: 1px solid rgba(255,255,255,.75);
+  border-radius: 30px;
+  background: rgba(255,255,255,.65);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 20px 60px rgba(192,65,116,.18);
+  animation: appear .8s ease;
+}
+
+@keyframes appear {
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.small {
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #d35d91;
+  font-weight: 600;
 }
 
 h1 {
-  font-size: 25px;
-  margin-bottom: 10px;
+  font-family: 'Great Vibes', cursive;
+  color: #e34c8c;
+  font-size: clamp(55px, 14vw, 76px);
+  font-weight: 400;
+  margin: 12px 0;
 }
 
-.subtitle {
-  color: #aebbd0;
+h2 {
+  color: #c4477d;
+  font-size: 23px;
+  margin: 15px 0;
+}
+
+p {
   font-size: 14px;
-  line-height: 1.6;
-  margin-bottom: 25px;
+  line-height: 1.9;
+  color: #81516a;
 }
 
-label {
-  display: block;
-  text-align: left;
-  font-size: 13px;
-  margin-bottom: 9px;
-  color: #d5dfef;
+.big-heart {
+  font-size: 65px;
+  margin: 15px 0;
+  animation: beat 1.3s infinite;
 }
 
-input {
-  width: 100%;
-  padding: 15px;
-  border-radius: 12px;
-  border: 1px solid #43536b;
-  outline: none;
-  background: #172337;
-  color: white;
-  font-size: 16px;
-  margin-bottom: 15px;
-}
-
-input:focus {
-  border-color: #22c55e;
+@keyframes beat {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.17); }
 }
 
 button {
-  width: 100%;
-  padding: 15px;
   border: none;
-  border-radius: 12px;
-  font-weight: bold;
-  font-size: 15px;
   cursor: pointer;
-  margin-top: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 50px;
+  padding: 14px 24px;
+  transition: .25s;
+}
+
+button:active {
+  transform: scale(.96);
 }
 
 .primary {
-  background: #22c55e;
-  color: #07150c;
-}
-
-.whatsapp {
-  background: #128c50;
   color: white;
-  display: none;
+  background: linear-gradient(135deg,#ff5c9c,#e83d83);
+  box-shadow: 0 8px 22px rgba(232,61,131,.3);
+  margin-top: 23px;
 }
 
-.verify {
-  background: #3b82f6;
-  color: white;
-  display: none;
+.primary:hover {
+  transform: translateY(-3px);
 }
 
-button:disabled {
-  opacity: .5;
-  cursor: not-allowed;
+.secondary {
+  color: #c4477d;
+  background: #ffe3ef;
+  margin: 10px 5px;
 }
 
-#otpSection {
-  display: none;
+.hidden {
+  display: none !important;
+}
+
+.envelope {
+  width: 190px;
+  height: 125px;
+  background: #ff91b9;
+  margin: 30px auto;
+  position: relative;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 25px #d96b9940;
+  overflow: hidden;
+}
+
+.envelope:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  border-top: 68px solid #ffb0ce;
+  border-left: 95px solid transparent;
+  border-right: 95px solid transparent;
+}
+
+.envelope span {
+  position: relative;
+  z-index: 2;
+  font-size: 32px;
   margin-top: 25px;
 }
 
-#otpInput {
-  text-align: center;
-  letter-spacing: 12px;
-  font-size: 25px;
-  font-weight: bold;
+.letter {
+  background: #fff9fc;
+  padding: 24px 20px;
+  border-radius: 18px;
+  border: 1px solid #ffd2e3;
+  text-align: left;
+  margin-top: 20px;
 }
 
-#timer {
-  margin: 14px 0;
-  color: #facc15;
-  font-size: 13px;
+.letter p {
+  margin: 10px 0;
 }
 
-#status {
-  display: none;
-  margin-top: 17px;
-  padding: 13px;
-  border-radius: 10px;
-  font-size: 14px;
-  line-height: 1.5;
+.signature {
+  font-family: 'Great Vibes', cursive;
+  font-size: 34px;
+  color: #e34c8c;
+  text-align: right;
+  margin-top: 20px;
 }
 
-.success {
-  display: block !important;
-  background: rgba(34,197,94,.15);
-  color: #4ade80;
-}
-
-.error {
-  display: block !important;
-  background: rgba(239,68,68,.15);
-  color: #f87171;
-}
-
-.note {
+.question {
   margin-top: 25px;
-  font-size: 11px;
-  color: #8493a9;
-  line-height: 1.6;
+  font-weight: 600;
+  color: #b83d76;
+  font-size: 18px;
+}
+
+.button-area {
+  margin-top: 15px;
+}
+
+.final-message {
+  font-family: 'Great Vibes', cursive;
+  font-size: 38px;
+  color: #e34c8c;
+  margin: 20px 0;
+}
+
+.footer {
+  margin-top: 25px;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #bc7896;
+}
+
+@media(max-width:380px) {
+  .card { padding: 28px 17px; }
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="hearts" id="hearts"></div>
 
-  <div class="logo">🔐</div>
+<main class="container">
 
-  <h1>Verify Your Number</h1>
-
-  <p class="subtitle">
-    Enter your WhatsApp number to receive a
-    verification code.
-  </p>
-
-  <div id="phoneSection">
-
-    <label for="phone">WhatsApp phone number</label>
-
-    <input
-      id="phone"
-      type="tel"
-      placeholder="254712345678"
-      autocomplete="tel"
-    >
-
-    <button class="primary" onclick="generateOTP()">
-      Generate OTP
+  <!-- WELCOME -->
+  <section class="card" id="welcome">
+    <div class="small">A little something for someone special</div>
+    <div class="big-heart">💗</div>
+    <h1>Hey Gloria</h1>
+    <p>
+      Someone has something special to tell you...
+      And I think you deserve to hear it.
+    </p>
+    <button class="primary" onclick="openLetter()">
+      Open your surprise 💌
     </button>
+    <div class="footer">MADE WITH LOVE • JUST FOR YOU</div>
+  </section>
 
-  </div>
+  <!-- LETTER -->
+  <section class="card hidden" id="letter">
+    <div class="small">A little letter from my heart</div>
+    <h1>Dear Gloria</h1>
 
-  <button id="sendButton"
-          class="whatsapp"
-          onclick="openWhatsApp()">
-    💬 Send OTP on WhatsApp
-  </button>
+    <div class="envelope">
+      <span>💌</span>
+    </div>
 
-  <div id="otpSection">
+    <div class="letter">
+      <p>Hey Gloria ❤️,</p>
 
-    <label for="otpInput">Enter your 6-digit OTP</label>
+      <p>
+        I don't know if you realize how special you are,
+        but there's something about you that makes an
+        ordinary moment feel a little more beautiful.
+      </p>
 
-    <input
-      id="otpInput"
-      type="text"
-      inputmode="numeric"
-      maxlength="6"
-      placeholder="000000"
-      autocomplete="one-time-code"
-    >
+      <p>
+        Your smile, your presence, and the little things
+        about you have a way of making someone smile
+        without even trying.
+      </p>
 
-    <div id="timer">Code expires in 05:00</div>
+      <p>
+        I'm not here to make big promises or use fancy
+        words. I just wanted you to know that you are
+        appreciated, admired, and genuinely special.
+      </p>
 
-    <button class="verify" id="verifyButton"
-            onclick="verifyOTP()">
-      Verify Code
+      <p>
+        If this little website makes you smile even for
+        a second, then mission accomplished. 🥹
+      </p>
+
+      <div class="signature">Someone who thinks you're special ❤️</div>
+    </div>
+
+    <button class="primary" onclick="showQuestion()">
+      There's one more thing... 💕
     </button>
+  </section>
 
-    <button class="primary" id="resendButton"
-            onclick="generateOTP()" disabled>
-      Generate another code
-    </button>
+  <!-- QUESTION -->
+  <section class="card hidden" id="question">
+    <div class="big-heart">🥹💗</div>
+    <div class="small">One tiny question</div>
+    <h1>Gloria</h1>
 
-  </div>
+    <p class="question">
+      Can I have the privilege of making you smile
+      a little more often? 💕
+    </p>
 
-  <div id="status"></div>
+    <div class="button-area">
+      <button class="primary" onclick="sayYes()">
+        YES! 💖
+      </button>
 
-  <p class="note">
-    DEMO VERSION · Manual WhatsApp delivery.
-    Never use this frontend-only demo to protect
-    real accounts or sensitive information.
-  </p>
+      <button class="secondary" id="noBtn" onclick="sayNo()">
+        Let me think 🙈
+      </button>
+    </div>
+    <p id="hint" style="margin-top:15px;font-size:12px;"></p>
+  </section>
 
-</div>
+  <!-- FINAL SURPRISE -->
+  <section class="card hidden" id="final">
+    <div class="big-heart">💞</div>
+    <div class="small">A little happiness unlocked</div>
+    <h1>Gloria!</h1>
+
+    <div class="final-message">
+      You just made my day!
+    </div>
+
+    <p>
+      No matter where life takes us, I hope you never
+      forget how wonderful you are.
+    </p>
+
+    <p style="margin-top:18px;">
+      Keep smiling, beautiful. The world looks better
+      with your smile in it. ❤️
+    </p>
+
+    <div class="footer">ENDLESS LITTLE HEARTS FOR YOU 💗</div>
+  </section>
+
+</main>
 
 <script>
-let generatedOTP = "";
-let expiryTime = 0;
-let attempts = 0;
-let verified = false;
-let phoneNumber = "";
-let timerInterval = null;
-let resendTimeout = null;
+const heartBox = document.getElementById("hearts");
 
-const phone = document.getElementById("phone");
-const otpInput = document.getElementById("otpInput");
-const statusBox = document.getElementById("status");
-const otpSection = document.getElementById("otpSection");
-const sendButton = document.getElementById("sendButton");
-const verifyButton = document.getElementById("verifyButton");
-const resendButton = document.getElementById("resendButton");
+function createHeart() {
+  const heart = document.createElement("span");
+  heart.className = "heart";
+  heart.innerHTML = ["💗","💕","💖","🌸","✨"][
+    Math.floor(Math.random() * 5)
+  ];
 
-function showStatus(message, type) {
-  statusBox.textContent = message;
-  statusBox.className = type;
+  heart.style.left = Math.random() * 100 + "vw";
+  heart.style.fontSize = (12 + Math.random() * 20) + "px";
+  heart.style.animationDuration = (5 + Math.random() * 7) + "s";
+
+  heartBox.appendChild(heart);
+
+  setTimeout(() => heart.remove(), 12000);
 }
 
-function generateOTP() {
+setInterval(createHeart, 450);
 
-  if (verified) return;
+function show(id) {
+  ["welcome","letter","question","final"].forEach(section => {
+    document.getElementById(section).classList.add("hidden");
+  });
 
-  let number = phone.value.trim().replace(/[\s+()-]/g, "");
-
-  // Accept Kenyan local numbers or international format.
-  if (/^0[17]\d{8}$/.test(number)) {
-    number = "254" + number.substring(1);
-  }
-
-  if (!/^254[17]\d{8}$/.test(number)) {
-    showStatus(
-      "Enter a valid Kenyan number, e.g. 0712345678 or 254712345678.",
-      "error"
-    );
-    return;
-  }
-
-  phoneNumber = number;
-
-  clearInterval(timerInterval);
-  clearTimeout(resendTimeout);
-
-  generatedOTP = String(
-    Math.floor(100000 + Math.random() * 900000)
-  );
-
-  expiryTime = Date.now() + 5 * 60 * 1000;
-  attempts = 0;
-
-  otpInput.value = "";
-  otpInput.disabled = false;
-  verified = false;
-
-  otpSection.style.display = "block";
-  sendButton.style.display = "block";
-  verifyButton.style.display = "block";
-
-  resendButton.disabled = true;
-  resendButton.textContent = "Generate another code";
-
-  showStatus(
-    "Your code is ready. Open WhatsApp and send the prepared message.",
-    "success"
-  );
-
-  updateTimer();
-
-  timerInterval = setInterval(updateTimer, 1000);
-
-  // Resend cooldown: 30 seconds.
-  resendTimeout = setTimeout(() => {
-    if (!verified) {
-      resendButton.disabled = false;
-    }
-  }, 30000);
-
+  document.getElementById(id).classList.remove("hidden");
+  window.scrollTo({top:0, behavior:"smooth"});
 }
 
-function openWhatsApp() {
-
-  if (!generatedOTP || Date.now() > expiryTime) {
-    showStatus("Your code has expired. Generate a new one.", "error");
-    return;
-  }
-
-  const message =
-    "Your verification code is: " + generatedOTP +
-    ". It expires in 5 minutes. Demo OTP only.";
-
-  const url =
-    "https://wa.me/" + phoneNumber +
-    "?text=" + encodeURIComponent(message);
-
-  window.open(url, "_blank");
+function openLetter() {
+  show("letter");
 }
 
-function verifyOTP() {
-
-  if (verified) return;
-
-  if (Date.now() > expiryTime) {
-    showStatus("OTP expired. Generate a new code.", "error");
-    return;
-  }
-
-  if (attempts >= 5) {
-    showStatus("Too many attempts. Generate a new code.", "error");
-    return;
-  }
-
-  const entered = otpInput.value.trim();
-
-  if (!/^\d{6}$/.test(entered)) {
-    showStatus("Enter all 6 digits.", "error");
-    return;
-  }
-
-  attempts++;
-
-  if (entered === generatedOTP) {
-
-    verified = true;
-
-    clearInterval(timerInterval);
-    clearTimeout(resendTimeout);
-
-    otpInput.disabled = true;
-    verifyButton.disabled = true;
-    resendButton.disabled = true;
-    sendButton.style.display = "none";
-
-    showStatus(
-      "✓ SUCCESS! Your phone number has been verified.",
-      "success"
-    );
-
-  } else {
-
-    showStatus(
-      "Incorrect code. Attempts remaining: " +
-      (5 - attempts),
-      "error"
-    );
-
-    if (attempts >= 5) {
-      verifyButton.disabled = true;
-      showStatus(
-        "Too many attempts. Generate a new code.",
-        "error"
-      );
-    }
-  }
+function showQuestion() {
+  show("question");
 }
 
-function updateTimer() {
+let noCount = 0;
 
-  const remaining = Math.max(
-    0,
-    Math.ceil((expiryTime - Date.now()) / 1000)
-  );
+function sayNo() {
+  const messages = [
+    "Are you really sure? 🥺",
+    "Just one little smile? 🙈",
+    "I'll wait patiently then 😂",
+    "You can take your time 💗"
+  ];
 
-  const minutes = String(Math.floor(remaining / 60))
-    .padStart(2, "0");
+  document.getElementById("hint").textContent =
+    messages[Math.min(noCount, messages.length - 1)];
 
-  const seconds = String(remaining % 60)
-    .padStart(2, "0");
+  noCount++;
+}
 
-  document.getElementById("timer").textContent =
-    "Code expires in " + minutes + ":" + seconds;
+function sayYes() {
+  show("final");
 
-  if (remaining <= 0) {
-    clearInterval(timerInterval);
-    verifyButton.disabled = true;
-    sendButton.style.display = "none";
-    showStatus(
-      "OTP expired. Generate a new code.",
-      "error"
-    );
+  for(let i = 0; i < 35; i++) {
+    setTimeout(createHeart, i * 70);
   }
 }
 </script>
 
 </body>
 </html>
+
